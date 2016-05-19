@@ -1,0 +1,155 @@
+---
+output: html_document
+---
+## ANOVA Analysis of Infant Rat Weight Gain
+### From "Plane Answers to Complex Questions" by Christensen, Table 7.4
+
+```{r, echo=FALSE, include=FALSE}
+source("C:\\Users\\Todd\\R\\StatisticsProjects\\TwoWayAnova.R")
+```
+
+  
+### Overview
+This summarizes an ANOVA analysis of the effect of litter genotype and foster
+mother genotype on infant rat weight gain. ANOVA calculations are done
+using native R functions, and duplicated using custom functions that
+implement concepts from linear model theory.
+
+  
+### Summary of Results
+The ANOVA results show strong evidence of an effect on infant rat weight
+gain due to foster mother genotype (p-value `r round(outNoI[2, 5], 3)`).
+A post-hoc analysis of the foster mother genotypes shows the following:
+
+* There is strong evidence that weight gain for genotype MF is greater than
+  weight gain for genotype MJ (p-value `r tOutB[5, 4]`). The mean difference
+  in weight gain between genotypes MF and MJ is
+  `r abs(tOutB[5, 1])` with `r 100*tukeyLevel`%
+  CI (`r abs(tOutB[5, 3])`, `r abs(tOutB[5, 2])`).
+
+* There is suggestive evidence that weight gain for genotype MA is greater than
+  weight gain for genotype MJ (p-value `r tOutB[3, 4]`). The mean difference in
+  weight gain between genotypes MA and MJ is `r abs(tOutB[3, 1])` with
+  `r 100*tukeyLevel`% CI (`r abs(tOutB[3, 3])`, `r abs(tOutB[3, 2])`).
+
+  
+### Two-Way ANOVA with Interaction
+Here is a Type I ANOVA analysis that includes the Litter:Mother interaction:
+
+```{r echo=FALSE}
+outWithI
+```
+
+The large p-value for the Litter:Mother interaction shows no evidence of an
+interaction effect.
+
+It is interesting to compare the ANOVA results with a
+plot of the interaction between the Litter and Mother effects:
+
+```{r echo=FALSE}
+prettyInteractionPlot(dfRats, 1, 2, 3, "Litter:Mother Interaction")
+```
+
+Although the Mother MA and MF genotypes seem to behave differently as the Litter genotype
+changes, the other two Mother genotypes show little interaction with the Litter genotypes.
+So this plot seems consistent with the p-value for the interaction effect. Since
+there is no evidence of a significant interaction effect, we will drop the interaction
+effect from the model and do a two-way ANOVA analysis without the interaction effect.
+  
+    
+### Two-Way ANOVA with Main Effects Only
+These results of a two-way ANOVA analysis without interaction test the significance of
+each main effect in the presence of the other main effect:
+
+```{r echo=FALSE}
+outNoI
+```
+
+The large p-value for the Litter effect shows no evidence of an effect due to
+Litter genotype. The small p-value for the Mother effect is strong evidence
+of an effect due to Mother genotype.
+  
+    
+### Assumptions of ANOVA Analysis
+The ANOVA results above are dependent on three assumptions about the model
+residuals: normal distribution, constant variance, and independence. Those
+three assumptions were tested as shown below:
+
+1. Check for normally distributed residuals:
+    ```{r echo=FALSE}
+    shapiro.test(out$residuals)
+    ```
+    
+    The moderately small p-value suggests the residuals may not be normally
+    distributed.
+
+    The QQ plot of residuals also suggests a possible deviation from normality.
+    This is especially evident at the far left and far right of the plot:
+    ```{r echo=FALSE}
+    prettyQQ(out$residuals, "QQ Plot of Residuals")
+    ```
+    
+    Such a moderate deviation from normality is acceptable, especially given the
+    fairly large sample size of `r dim(dfRats)[1]`.
+     
+2. Check for constant variance of residuals:
+    ```{r echo=FALSE}
+    hov(WeightGain ~ Mother, data = dfRats)
+    ```
+    The Brown-Forsyth test for constant variance across Mother genotypes
+    yields a large p-value. This shows no evidence that the residual variances
+    differs across Mother genotypes:
+    
+    We can also check the homogeneity of variances by looking at a scatter plot of
+    residuals vs. fitted values, categorized by Mother genotype:
+
+    ```{r echo=FALSE}
+    prettyResVsFit(dfOut, 1, 2, FALSE, "Residuals vs. Fitted Values, Categorized by Mother", 4)
+    ```
+    
+  + This scatter plot does not show a significant difference in variances
+    across Mother genotypes. It also shows fairly constant variability
+    across all data.
+      
+  + In addition, this plot does not show any systematic patterns in the residuals
+    that would indicate the model is missing some significant effect.
+        
+3. Check for independence among residuals:  
+   Not enough is known about the circumstances of the experiment to evaluate
+   this assumption.
+  
+    
+### Pair-Wise Differences Among Mother Genotypes
+Now that we see evidence of a significant difference among Mother genotypes,
+information about the pair-wise differences is interesting. We examined
+those differences two ways: a categorized box plot, and the Tukey HSD test:
+
+1. A box plot categorized by Mother genotype indicates the biggest difference
+   is between genotypes MJ and MF:
+   ```{r echo=FALSE}
+   prettyBoxPlot(dfRats, 1, 3, "Weight Gain Categorized by Mother")
+   ```
+    
+2. Tukey HSD test:
+   ```{r echo=FALSE}
+   kable(tOutA$Mother)
+   ```
+       
+  + The small p-value for the difference between genotypes MJ and MF is strong
+    evidence of a difference between those two genotypes. This is consistent with
+    the categorized box plot above.
+      
+  + The moderately-sized p-value for the difference between genotypes MJ and MA
+    is suggestive of a difference between those two genotypes. This is also
+    consistent with the categorized box plot above.
+
+    
+### Outliers
+Sometimes ANOVA outliers contain interesting information. A scatter plot of
+studentized residuals vs. fitted values shows no outliers.
+  ```{r echo=FALSE}
+  prettyResVsFit(dfOut, 1, 3, TRUE, "Studentized Residuals vs. Fitted Values")  
+  ```
+
+  
+
