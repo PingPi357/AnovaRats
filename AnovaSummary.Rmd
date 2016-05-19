@@ -5,7 +5,7 @@ output: html_document
 ### From "Plane Answers to Complex Questions" by Christensen, Table 7.4
 
 ```{r, echo=FALSE, include=FALSE}
-source("C:\\Users\\Todd\\R\\StatisticsProjects\\TwoWayAnova.R")
+source("C:\\Users\\Todd\\R\\StatisticsProjects\\AnovaRats\\TwoWayAnova.R")
 ```
 
   

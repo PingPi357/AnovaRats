@@ -5,7 +5,7 @@ library(knitr)
 
 # Functions that implement theorems from linear model theory are
 # defined in a separate file.
-source("C:\\Users\\Todd\\R\\StatisticsProjects\\LinearModelFunctions.R")
+source("C:\\Users\\Todd\\R\\StatisticsProjects\\AnovaRats\\LinearModelFunctions.R")
 
 
 # Two-Way ANOVA Analysis using R lm() function.
