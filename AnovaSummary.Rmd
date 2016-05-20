@@ -1,6 +1,7 @@
 ---
 output: html_document
 ---
+
 ## ANOVA Analysis of Infant Rat Weight Gain
 ### From "Plane Answers to Complex Questions" by Christensen, Table 7.4
 
