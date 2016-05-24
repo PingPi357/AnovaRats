@@ -1,5 +1,6 @@
 library(stringr)
 library(MASS)
+library(ggplot2)
 
 # Implement functions from linear model theory.
 # See Christensen, "Plane Answers to Complex Questions", 2002
